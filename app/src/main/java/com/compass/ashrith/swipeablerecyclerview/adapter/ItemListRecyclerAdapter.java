@@ -2,8 +2,11 @@ package com.compass.ashrith.swipeablerecyclerview.adapter;
 
 import android.content.Context;
 import android.os.Handler;
+import android.support.v4.widget.ViewDragHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.DragEvent;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -90,6 +93,7 @@ public class ItemListRecyclerAdapter extends RecyclerView.Adapter<ItemListRecycl
             public void onClick(View v) {
                 int adapterPosition = holder.getAdapterPosition();
                 try {
+
 
                     itemList.get(adapterPosition).setUndo(true);
                     itemList.get(adapterPosition).setItem(false);
@@ -244,7 +248,115 @@ public class ItemListRecyclerAdapter extends RecyclerView.Adapter<ItemListRecycl
             }
         });
 
+
+        holder.itemLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, " item Clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         //Note:for swipe action,if swipe action is not required u can remove this touch listener
+        holder.itemLayout.setOnTouchListener(new OnSwipeTouchListener(context) {
+            int adapterPosition=holder.getAdapterPosition();
+            @Override
+            public boolean onSwipeRight() {
+                Toast.makeText(context, " item left to right swipe", Toast.LENGTH_SHORT).show();
+                int adapterPosition = holder.getAdapterPosition();
+                try {
+
+                    itemList.get(adapterPosition).setUndo(false);
+                    itemList.get(adapterPosition).setItem(false);
+                    itemList.get(adapterPosition).setUndoIgnore(true);
+                } catch (Exception e) {
+                }
+                try {
+                    holder.itemLayout.setVisibility(View.GONE);
+                    holder.undoLayout.setVisibility(View.GONE);
+                    holder.undoignoreLayout.setVisibility(View.VISIBLE);
+                    holder.undoignoreLayout.startAnimation(inFromLeftAnimation());
+                    itemList.get(adapterPosition).setUndo(false);
+                    itemList.get(adapterPosition).setItem(false);
+                    itemList.get(adapterPosition).setUndoIgnore(true);
+                } catch (Exception e) {
+
+                }
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    try {
+                        final SwipeRunnable runnable = new SwipeRunnable() {
+                            @Override
+                            public void run() {
+                                synchronized (mRunnables) {
+                                    iOnSwipe.onSwipe(mRunnables.indexOf(this), SWIPE_LEFT);
+                                }
+                            }
+                        };
+                        synchronized (mRunnables) {
+                            mRunnables.set(adapterPosition, runnable);
+                            mHandler.postDelayed(runnable, TIME_POST_DELAYED);
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onSwipeLeft() {
+                Toast.makeText(context, " item right to left swipe", Toast.LENGTH_SHORT).show();
+                try {
+
+                    itemList.get(adapterPosition).setUndo(true);
+                    itemList.get(adapterPosition).setItem(false);
+                    itemList.get(adapterPosition).setUndoIgnore(false);
+                } catch (Exception e) {
+                }
+                try {
+                    holder.itemLayout.setVisibility(View.GONE);
+                    holder.undoignoreLayout.setVisibility(View.GONE);
+                    holder.undoLayout.setVisibility(View.VISIBLE);
+                    holder.undoLayout.startAnimation(inFromRightAnimation());
+                    itemList.get(adapterPosition).setUndo(true);
+                    itemList.get(adapterPosition).setItem(false);
+                    itemList.get(adapterPosition).setUndoIgnore(false);
+                } catch (Exception e) {
+
+                }
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    try {
+                        final SwipeRunnable runnable = new SwipeRunnable() {
+                            @Override
+                            public void run() {
+                                synchronized (mRunnables) {
+                                    iOnSwipe.onSwipe(mRunnables.indexOf(this), SWIPE_RIGHT);
+                                }
+                            }
+                        };
+                        synchronized (mRunnables) {
+                            mRunnables.set(adapterPosition, runnable);
+                            mHandler.postDelayed(runnable, TIME_POST_DELAYED);
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onSwipeTop() {
+                return true;
+            }
+
+            @Override
+            public boolean onSwipeBottom() {
+                return true;
+            }
+        });
+        /*//Note:for swipe action,if swipe action is not required u can remove this touch listener
         holder.itemLayout.setOnTouchListener(new RelativeLayoutTouchListener(context,holder.getAdapterPosition()) {
             int adapterPosition=holder.getAdapterPosition();
             @Override
@@ -339,7 +451,7 @@ public class ItemListRecyclerAdapter extends RecyclerView.Adapter<ItemListRecycl
                 super.itemClicked();
                 Toast.makeText(context, " item Clicked", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
     }
 
 
@@ -374,7 +486,6 @@ public class ItemListRecyclerAdapter extends RecyclerView.Adapter<ItemListRecycl
             ButterKnife.bind(this, itemView);
         }
     }
-
 
     //Helpers for swipe action
     private Animation inFromRightAnimation() {
@@ -501,7 +612,7 @@ public class ItemListRecyclerAdapter extends RecyclerView.Adapter<ItemListRecycl
         }
     }
 
-    //class required for swipe action
+    /*//class required for swipe action,Touch
     public abstract class RelativeLayoutTouchListener implements View.OnTouchListener {
 
         static final String logTag = "ActivitySwipeDetector";
@@ -588,6 +699,71 @@ public class ItemListRecyclerAdapter extends RecyclerView.Adapter<ItemListRecycl
             return false;
         }
 
-    }
+    }*/
 
+    //class required for swipe action,Gesture
+    public abstract class OnSwipeTouchListener implements View.OnTouchListener {
+
+        private final GestureDetector gestureDetector;
+
+        public OnSwipeTouchListener(Context ctx) {
+            gestureDetector = new GestureDetector(ctx, new GestureListener());
+        }
+
+        public boolean onTouch(final View v, final MotionEvent event) {
+            return gestureDetector.onTouchEvent(event);
+        }
+
+        private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+            private static final int SWIPE_THRESHOLD = 5;
+            private static final int SWIPE_VELOCITY_THRESHOLD = 5;
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                boolean result = false;
+                try {
+                    float diffY = e2.getY() - e1.getY();
+                    float diffX = e2.getX() - e1.getX();
+                    if (Math.abs(diffX) > Math.abs(diffY)) {
+                        if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                            if (diffX > 0) {
+                                result = onSwipeRight();
+                            } else {
+                                result = onSwipeLeft();
+                            }
+                        }
+                    } else {
+                        if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                            if (diffY > 0) {
+                                result = onSwipeBottom();
+                            } else {
+                                result = onSwipeTop();
+                            }
+                        }
+                    }
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+                return result;
+            }
+        }
+            public boolean onSwipeRight() {
+                return false;
+            }
+
+            public boolean onSwipeLeft() {
+                return false;
+            }
+
+            public boolean onSwipeTop() {
+                return false;
+            }
+
+            public boolean onSwipeBottom() {
+                return false;
+            }
+
+        }
 }
+

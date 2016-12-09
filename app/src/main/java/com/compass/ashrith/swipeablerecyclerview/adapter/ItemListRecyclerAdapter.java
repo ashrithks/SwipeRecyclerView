@@ -258,7 +258,6 @@ public class ItemListRecyclerAdapter extends RecyclerView.Adapter<ItemListRecycl
 
         //Note:for swipe action,if swipe action is not required u can remove this touch listener
         holder.itemLayout.setOnTouchListener(new OnSwipeTouchListener(context) {
-            int adapterPosition=holder.getAdapterPosition();
             @Override
             public boolean onSwipeRight() {
                 Toast.makeText(context, " item left to right swipe", Toast.LENGTH_SHORT).show();
@@ -305,6 +304,7 @@ public class ItemListRecyclerAdapter extends RecyclerView.Adapter<ItemListRecycl
 
             @Override
             public boolean onSwipeLeft() {
+                int adapterPosition = holder.getAdapterPosition();
                 Toast.makeText(context, " item right to left swipe", Toast.LENGTH_SHORT).show();
                 try {
 

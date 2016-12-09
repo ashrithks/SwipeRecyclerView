@@ -507,7 +507,7 @@ public class ItemListRecyclerAdapter extends RecyclerView.Adapter<ItemListRecycl
         static final String logTag = "ActivitySwipeDetector";
         private Context activity;
         private int position;
-        static final int MIN_DISTANCE = 5;
+        static final int MIN_DISTANCE = 2;
         private float downX, downY, upX, upY;
 
         // private MainActivity mMainActivity;

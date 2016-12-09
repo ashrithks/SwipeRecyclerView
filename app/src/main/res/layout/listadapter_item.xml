@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/rootlayout"
+    android:layout_height="wrap_content">
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:visibility="visible"
+    android:id="@+id/itemlayout">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/text"
+        android:tag="onCall"
+        android:text="hello"
+        android:gravity="center"
+        android:textColor="#000000"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+       />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/text"
+        android:layout_marginLeft="10dp"
+        android:text="Add Item"
+        android:id="@+id/additem"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:background="@color/green_background"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/additem"
+        android:layout_marginLeft="20dp"
+        android:text="IGNORE"
+        android:id="@+id/ignore"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:background="@color/red_background"/>
+
+<View
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:background="@color/coloritemdivider"
+    android:layout_alignParentBottom="true"
+    />
+</RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/undolayout"
+        android:layout_toLeftOf="@+id/itemlayout">
+    <include layout="@layout/added_undo"
+        />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/undoignorelayout"
+        android:layout_toRightOf="@+id/itemlayout">
+        <include layout="@layout/deleted_undo"
+            />
+    </RelativeLayout>
+
+</RelativeLayout>
